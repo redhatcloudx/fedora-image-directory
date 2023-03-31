@@ -36,6 +36,9 @@ jobs:
           python-version: "3.11"
           cache: "poetry"
 
+      - name: Install the app
+        runs: poetry install
+
       - name: Freeze the Flask site
         run: poetry run python app/freeze.py
 
