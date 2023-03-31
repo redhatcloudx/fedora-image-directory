@@ -37,7 +37,7 @@ jobs:
           cache: "poetry"
 
       - name: Install the app
-        runs: poetry install
+        run: poetry install
 
       - name: Freeze the Flask site
         run: poetry run python app/freeze.py
