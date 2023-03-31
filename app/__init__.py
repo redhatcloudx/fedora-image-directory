@@ -5,6 +5,7 @@ from flask import Flask, render_template
 import pandas as pd
 
 app = Flask("fedora")
+app.config["APPLICATION_ROOT"] = "/fedora-image-directory"
 
 
 def load_image_data():
