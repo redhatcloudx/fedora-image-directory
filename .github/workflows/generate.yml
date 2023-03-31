@@ -37,7 +37,7 @@ jobs:
           cache: "poetry"
 
       - name: Freeze the Flask site
-        run: poetry run python freeze.py
+        run: poetry run python app/freeze.py
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v1
