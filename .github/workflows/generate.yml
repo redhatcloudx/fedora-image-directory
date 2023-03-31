@@ -41,6 +41,8 @@ jobs:
 
       - name: Freeze the Flask site
         run: poetry run python app/freeze.py
+        env:
+          FREEZER_BASE_URL: ${{ steps.deployment.outputs.page_url }}
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v1
