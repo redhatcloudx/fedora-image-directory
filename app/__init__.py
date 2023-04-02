@@ -58,13 +58,15 @@ app.images = load_image_data()
 
 @app.route("/")
 def index():
+    """Show the main page."""
     return render_template(
         "index.html", fedora_versions=fedora_versions(), images=filter_fedora_images()
     )
 
 
-@app.route("/versions/<version>")
+@app.route("/versions/<version>/")
 def versions(version):
+    """Show data for a specific Fedora version."""
     return render_template(
         "index.html",
         fedora_versions=fedora_versions(),
