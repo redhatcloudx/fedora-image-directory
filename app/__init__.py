@@ -27,8 +27,9 @@ def filter_fedora_images(version=None):
     https://regex101.com/r/oyOo7A/1
 
     """
-    app.logger.info("Filtering image data...")
-    df = app.images[app.images["Name"].str.contains("Fedora-Cloud-Base")]
+    df = app.images[app.images["Name"].str.contains("Fedora-Cloud-Base")].copy(
+        deep=True
+    )
     regex_string = (
         r"Fedora-Cloud-Base-(\d+[_]?\w+?|Rawhide)-([0-9n\.]+)\."
         r"(\w+)-(\w+)-(\w+-\w+-[0-9]+)-([a-z0-9]+)-(\d)"
