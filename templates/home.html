@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<section class="py-5 text-center container">
+    <div class="row py-lg-5">
+        <div class="col-lg-8 col-md-8 mx-auto">
+            <h1 class="fw-light">Find Fedora cloud images on AWS</h1>
+            <p class="lead">
+                Finding the right Fedora cloud image on AWS can be a challenge.<br />
+                Start by choosing your preferred Fedora release below.
+            </p>
+            {% for index, row in combined_releases.iterrows() if not row.prerelease %}
+            <p>
+                <a class="btn btn-primary" role="button" href="{{ url_for('aws_image_detail', release=row.release) }}">
+                    {{ row.release }} (stable)
+                </a>
+            </p>
+            {% endfor %}
+            <p>
+                <small>
+                    Pre-release images may be unstable and are not recommended for production use.
+                </small>
+            </p>
+            {% for index, row in combined_releases.iterrows() if row.prerelease %}
+            {% set button_class = "btn-warning" if row.prerelease else "btn-primary" %}
+            <p>
+                <a class="btn btn-warning" role="button" href="{{ url_for('aws_image_detail', release=row.release) }}">
+                    {{ row.release }} (pre-release)
+                </a>
+            </p>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+{% endblock %}
