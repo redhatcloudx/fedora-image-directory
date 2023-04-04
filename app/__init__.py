@@ -14,7 +14,7 @@ app = Flask("fedora")
 def load_image_data():
     """Load image data from the image directory."""
     app.logger.info("Loading image data...")
-    return pd.read_json("data/images.json.zst")
+    return pd.read_json("data/images.json")
 
 
 def current_fedora_releases():
@@ -25,11 +25,16 @@ def current_fedora_releases():
     df = df[(df["variant"] == "Cloud") & df["link"].str.endswith("raw.xz")]
 
     # Process the image filename.
-    regex = r"Fedora-Cloud-Base-(\d+[_]?\w+?-[\dn\.]+\w+)\.raw\.xz"
+    regex = r"Fedora-Cloud-Base-(\d*\w*[_]?\w+?-[\dn\.]+\w+)\.raw\.xz"
     df["release"] = df["link"].str.extract(regex, expand=False)
 
     # Ensure the version contains only the numbers of the release.
     df["version"] = df["release"].str.extract(r"(\d+)", expand=False)
+
+    # Ensure rawhide is capitalized to match the image names.
+    df["version"] = df["version"].apply(
+        lambda x: x.capitalize() if x == "rawhide" else x
+    )
 
     # Return only the version string and release name.
     return df[["version", "release"]]
@@ -46,7 +51,22 @@ def current_fedora_versions():
     # one.
     df["prerelease"] = df["releases"].apply(lambda x: True if len(x) > 1 else False)
 
+    # Ensure rawhide is capitalized to match the image names.
+    df["version"] = df["version"].apply(
+        lambda x: x.capitalize() if x == "rawhide" else x
+    )
+
     return df[["version", "prerelease"]]
+
+
+def prerelease_fedora_versions():
+    """Get pre-release versions of Fedora in a simple list."""
+    return current_fedora_versions().query("prerelease==True")["version"].tolist()
+
+
+def stable_fedora_versions():
+    """Get the latest stable Fedora release."""
+    return current_fedora_versions().query("prerelease==False")["version"].tolist()
 
 
 def combined_fedora_releases():
@@ -68,6 +88,15 @@ def fedora_images_for_release(df, release):
     return df[df["Name"].str.contains(f"Fedora-Cloud-Base-{release}")]
 
 
+def aws_images_all_releases(df):
+    """Get a list of Fedora releases from the AWS data."""
+    filtered_df = df[df["Name"].str.contains("Fedora-Cloud-Base")].copy(deep=True)
+
+    # Get all of the unique releases from the AWS data.
+    regex = r"Fedora-Cloud-Base-(\d*\w*[_]?\w+?-[\dn\.]+\w+)"
+    return filtered_df["Name"].str.extract(regex, expand=False).unique()
+
+
 app.images = load_image_data()
 
 
@@ -80,21 +109,23 @@ def index():
     )
 
 
+@app.route("/aws/")
+def aws_image_list():
+    """List all of Fedora releases found in the AWS data."""
+    return render_template(
+        "aws_list.html",
+        releases=aws_images_all_releases(app.images),
+        prereleases=prerelease_fedora_versions(),
+        all_releases=current_fedora_versions()["version"].tolist(),
+        stable_releases=stable_fedora_versions(),
+    )
+
+
 @app.route("/aws/detail/<release>/")
 def aws_image_detail(release):
-    """Show the list of AWS images for a given release."""
+    """Get a list of AWS images for a particular release."""
     return render_template(
         "aws_detail.html",
         release=release,
         images=fedora_images_for_release(app.images, release),
     )
-
-
-# @app.route("/aws/")
-# def aws_image_list(release):
-#     """Show the list of AWS images for a given release."""
-#     return render_template(
-#         "aws.html",
-#         release=release,
-#         images=fedora_images_for_release(app.images, release),
-#     )
