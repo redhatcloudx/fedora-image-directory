@@ -45,10 +45,7 @@
         var table = $("#images").DataTable({
             orderCellsTop: true,
             order: [[0, 'asc']],
-            lengthMenu: [
-                [-1],
-                ['All'],
-            ],
+            "paging": false,
             "columnDefs": [
                 {
                     "targets": 4,
