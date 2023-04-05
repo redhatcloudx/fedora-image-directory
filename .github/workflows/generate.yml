@@ -41,14 +41,11 @@ jobs:
       - name: Update data
         run: |
           curl --location --silent --retry 10 --retry-all-errors \
-            --output data/images.json \
-            https://imagedirectory.cloud/filtered/aws/owner/125523088429
+            https://imagedirectory.cloud/filtered/aws/owner/125523088429 | jq >  data/images.json
           curl --location --silent --retry 10 --retry-all-errors \
-            --output data/product-versions.json \
-            "https://pdc.fedoraproject.org/rest_api/v1/product-versions/?active=true&short=fedora"
+            "https://pdc.fedoraproject.org/rest_api/v1/product-versions/?active=true&short=fedora" | jq > data/product-versions.json
           curl --location --silent --retry 10 --retry-all-errors \
-            --output data/releases.json \
-            https://getfedora.org/releases.json
+            https://getfedora.org/releases.json | jq > data/releases.json
 
       - name: Commit and push if it changed
         run: |-
