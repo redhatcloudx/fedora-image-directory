@@ -145,10 +145,12 @@ def api_aws_image_list():
             }
             for x in releases
         ]
-    )
+    ), {"Content-Type": "application/json; charset=utf-8"}
 
 
 @app.route("/api/aws/detail/<release>/")
 def api_aws_image_detail(release):
     images = fedora_images_for_release(app.images, release).to_json(orient="records")
-    return jsonify(json.loads(images))
+    return jsonify(json.loads(images)), {
+        "Content-Type": "application/json; charset=utf-8"
+    }
