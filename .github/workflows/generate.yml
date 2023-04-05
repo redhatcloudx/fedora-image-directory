@@ -6,9 +6,9 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
-  pages: write
+  contents: write
   id-token: write
+  pages: write
 
 concurrency:
   group: "pages"
@@ -35,6 +35,27 @@ jobs:
         with:
           python-version: "3.11"
           cache: "poetry"
+
+      - name: Update data
+        run: |
+          curl --location --silent --retry 10 --retry-all-errors \
+            --output data/images.json \
+            https://imagedirectory.cloud/filtered/aws/owner/125523088429
+          curl --location --silent --retry 10 --retry-all-errors \
+            --output data/product-versions.json \
+            "https://pdc.fedoraproject.org/rest_api/v1/product-versions/?active=true&short=fedora"
+          curl --location --silent --retry 10 --retry-all-errors \
+            --output data/releases.json \
+            https://getfedora.org/releases.json
+
+      - name: Commit and push if it changed
+        run: |-
+          git config user.name "Data updates"
+          git config user.email "noreply@redhat.com"
+          git add data
+          timestamp=$(date -u)
+          git commit -m "Latest data: ${timestamp}" || exit 0
+          git push
 
       - name: Install the app
         run: poetry install --no-dev
