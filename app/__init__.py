@@ -132,7 +132,7 @@ def aws_image_detail(release):
 
 
 # Routes under this line are for the API.
-@app.route("/api/aws/")
+@app.route("/api/aws")
 def api_aws_image_list():
     releases = sorted(list(aws_images_all_releases(app.images)), reverse=True)
     return jsonify(
@@ -148,7 +148,7 @@ def api_aws_image_list():
     ), {"Content-Type": "application/json; charset=utf-8"}
 
 
-@app.route("/api/aws/detail/<release>/")
+@app.route("/api/aws/detail/<release>")
 def api_aws_image_detail(release):
     images = fedora_images_for_release(app.images, release).to_json(orient="records")
     return jsonify(json.loads(images)), {
