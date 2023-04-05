@@ -2,7 +2,7 @@
 import json
 import re
 
-from flask import Flask, render_template
+from flask import Flask, jsonify, render_template, url_for
 import pandas as pd
 import requests
 
@@ -129,3 +129,26 @@ def aws_image_detail(release):
         release=release,
         images=fedora_images_for_release(app.images, release),
     )
+
+
+# Routes under this line are for the API.
+@app.route("/api/aws/")
+def api_aws_image_list():
+    releases = sorted(list(aws_images_all_releases(app.images)), reverse=True)
+    return jsonify(
+        [
+            {
+                "release": x,
+                "detail_url": url_for(
+                    "api_aws_image_detail", release=x, _external=True
+                ),
+            }
+            for x in releases
+        ]
+    )
+
+
+@app.route("/api/aws/detail/<release>/")
+def api_aws_image_detail(release):
+    images = fedora_images_for_release(app.images, release).to_json(orient="records")
+    return jsonify(json.loads(images))
