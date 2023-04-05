@@ -19,7 +19,7 @@
     <meta property="og:type" content="website">
     <meta property="og:title" content="Fedora Cloud Images">
     <meta property="og:description" content="Find Fedora cloud images quickly via the image directory. (Experimental)">
-    <meta property="og:image" content="https://fedora.imagedirectory.cloud/Fedora_infinity_grayscale.png">
+    <meta property="og:image" content="{{ url_for('static', filename='Fedora_infinity_grayscale.png') }}">
 
     <!-- Twitter Meta Tags -->
     <meta name="twitter:card" content="summary_large_image">
@@ -27,7 +27,7 @@
     <meta property="twitter:url" content="https://fedora.imagedirectory.cloud">
     <meta name="twitter:title" content="Fedora Cloud Images">
     <meta name="twitter:description" content="Find Fedora cloud images quickly via the image directory. (Experimental)">
-    <meta name="twitter:image" content="https://fedora.imagedirectory.cloud/Fedora_infinity_grayscale.png">
+    <meta name="twitter:image" content="{{ url_for('static', filename='Fedora_infinity_grayscale.png') }}">
 
     <!-- DataTables via CDN -->
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
