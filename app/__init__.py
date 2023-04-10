@@ -163,7 +163,7 @@ def aws_image_detail(release):
 
 
 # Routes under this line are for the API.
-@app.route("/api/aws")
+@app.route("/api/aws/list")
 def api_aws_image_list():
     releases = sorted(list(aws_images_all_releases(app.images)), reverse=True)
     return jsonify(
