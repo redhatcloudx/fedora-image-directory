@@ -13,64 +13,6 @@
     </div>
 </div>
 
-<!-- <div class="container">
-    <div class="row justify-content-center">
-        <div class="col-auto">
-            <table id="images" class="table table-striped table-hover table-responsive">
-                <thead>
-                    <tr>
-                        <th scope="col">Release</th>
-                        <th scope="col" class="text-center">Fedora Version</th>
-                        <th scope="col" class="text-center">Arch</th>
-                        <th scope="col" class="text-center">Status</th>
-
-                    </tr>
-                </thead>
-                <tbody>
-                    {%- for release in releases %}
-                    {% set fedora_version = release.split("-")[0] %}
-                    {% set fedora_arch = release.split(".")[-1] %}
-                    {% set is_prerelease = (fedora_version in prereleases or "Beta" in release) %}
-                    {% set is_nightly = (release.split(".")[0] | length > 8) %}
-                    {% set is_eol = (fedora_version.split("_")[0] not in stable_releases and
-                    fedora_version.split("_")[0] not in
-
-                    prereleases) %}
-                    <tr>
-                        <td>
-                            <a href="{{ url_for('aws_image_detail', release=release) }}" target="_blank">
-                                {{ release }}
-                            </a>
-                        </td>
-                        <td class="text-center">{{ fedora_version }}</td>
-                        <td class="text-center">{{ fedora_arch }}</td>
-                        <td class="text-center">
-                            {% if is_eol %}
-                            <span class="badge text-bg-danger">
-                                End Of Life
-                            </span>
-                            {% elif is_prerelease %}
-                            <span class="badge text-bg-warning">
-                                Pre-Release
-                            </span>
-                            {% elif is_nightly %}
-                            <span class="badge text-bg-secondary">
-                                Nightly
-                            </span>
-                            {% else %}
-                            <span class="badge text-bg-primary">
-                                Stable
-                            </span>
-                            {% endif %}
-                        </td>
-                    </tr>
-                    {%- endfor %}
-                </tbody>
-            </table>
-        </div>
-    </div>
-</div> -->
-
 <div class="container">
     <div class="row">
         <div class="col"></div>
