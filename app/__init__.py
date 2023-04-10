@@ -100,6 +100,11 @@ def aws_images_all_releases(df):
 app.images = load_image_data()
 
 
+@app.context_processor
+def inject_global_template_variables():
+    return dict(fedora_releases=combined_fedora_releases())
+
+
 @app.route("/")
 def index():
     """Show the main page."""

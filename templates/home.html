@@ -1,56 +1,79 @@
 {% extends 'base.html' %}
-{% block title %}Find Fedora Cloud images on AWS{% endblock %}
+{% block title %}Fedora Cloud images{% endblock %}
 
 {% block content %}
 
-<section class="pb-5 text-center container">
-    <div class="row py-lg-5">
-        <div class="col-lg-8 col-md-8 mx-auto">
-            <h1 class="fw-light">Find Fedora cloud images on AWS</h1>
-            <p class="lead">
-                Finding the right Fedora cloud image on AWS can be a challenge.<br />
-                Start by choosing your preferred Fedora release below.
-            </p>
-            {% for index, row in combined_releases.iterrows() if not row.prerelease %}
-            <p>
-                <a class="btn btn-primary" role="button" href="{{ url_for('aws_image_detail', release=row.release) }}">
-                    {{ row.release }} (stable)
-                </a>
-            </p>
-            {% endfor %}
-            <p>
-                <small>
-                    Pre-release images may be unstable and are not recommended for production use.
-                </small>
-            </p>
-            {% for index, row in combined_releases.iterrows() if row.prerelease %}
-            {% set button_class = "btn-warning" if row.prerelease else "btn-primary" %}
-            <p>
-                <a class="btn btn-warning" role="button" href="{{ url_for('aws_image_detail', release=row.release) }}">
-                    {{ row.release }} (pre-release)
-                </a>
-            </p>
-            {% endfor %}
-        </div>
-    </div>
-
-</section>
-
 <div class="container text-center">
     <div class="row">
-        <div class="col">
-
-        </div>
-        <div class="col-6">
-            <h4>Looking for Fedora Rawhide or something else?</h4>
-            <p>
-                Go to the <a href="{{ url_for('aws_image_list') }}">complete listing of Fedora images</a> at AWS.
+        <div class="col"></div>
+        <div class="col-lg-6">
+            <h1>Fedora on AWS</h1>
+            <p class="lead">
+                Start by choosing your preferred stable Fedora release below:
             </p>
         </div>
+        <div class="col"></div>
+    </div>
+    <div class="row">
+        <div class="col"></div>
+        {% for index, row in combined_releases.iterrows() if not row.prerelease %}
+        <div class="col-md-auto p-1">
+            <a class="btn btn-primary" role="button" href="{{ url_for('aws_image_detail', release=row.release) }}">
+                {{ row.release }}
+            </a>
+        </div>
+        {% endfor %}
+        <div class="col"></div>
+    </div>
+    <div class="row py-3">
         <div class="col">
-
+            Looking for other images?
+            View the <a href="{{ url_for('aws_image_list') }}">complete listing</a>.
         </div>
     </div>
 </div>
+
+<div class="container py-5">
+    <div class="row">
+        <div class="col"></div>
+        <div class="col-lg-6">
+            <h5 class="text-center">Frequently Asked Questions</h5>
+            <div class="accordion accordion-flush" id="accordionFlushExample">
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                            data-bs-target="#flush-collapseTwo" aria-expanded="false" aria-controls="flush-collapseTwo">
+                            What about other cloud providers?
+                        </button>
+                    </h2>
+                    <div id="flush-collapseTwo" class="accordion-collapse collapse"
+                        data-bs-parent="#accordionFlushExample">
+                        <div class="accordion-body">
+                            Image listings for more providers are coming soon! Stay tuned.
+                        </div>
+                    </div>
+                </div>
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                            data-bs-target="#flush-collapseThree" aria-expanded="false"
+                            aria-controls="flush-collapseThree">
+                            I have feedback to share or I found a bug. What should I do?
+                        </button>
+                    </h2>
+                    <div id="flush-collapseThree" class="accordion-collapse collapse"
+                        data-bs-parent="#accordionFlushExample">
+                        <div class="accordion-body">
+                            Visit our [GitHub repository](https://github.com/redhatcloudx/fedora-image-directory) and
+                            open an issue. We also love your pull requests. 🥰
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col"></div>
+    </div>
+</div>
+
 
 {% endblock %}
