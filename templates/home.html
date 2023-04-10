@@ -19,7 +19,7 @@
         {% for index, row in combined_releases.iterrows() if not row.prerelease %}
         <div class="col-md-auto p-1">
             <a class="btn btn-primary" role="button" href="{{ url_for('aws_image_detail', release=row.release) }}">
-                {{ row.release }}
+                Fedora {{ row.release }}
             </a>
         </div>
         {% endfor %}

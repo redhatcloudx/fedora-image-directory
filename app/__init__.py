@@ -24,8 +24,11 @@ def current_fedora_releases():
     # Reduce the list to only one image per version.
     df = df[(df["variant"] == "Cloud") & df["link"].str.endswith("raw.xz")]
 
+    # Remove aarch64 listings to avoid duplication.
+    df = df[df["arch"] == "x86_64"]
+
     # Process the image filename.
-    regex = r"Fedora-Cloud-Base-(\d*\w*[_]?\w+?-[\dn\.]+\w+)\.raw\.xz"
+    regex = r"Fedora-Cloud-Base-(\d*\w*[_]?\w+?-[\dn\.]+)\.\w+\.raw\.xz"
     df["release"] = df["link"].str.extract(regex, expand=False)
 
     # Ensure the version contains only the numbers of the release.
@@ -85,7 +88,12 @@ def aws_images_for_release(images, release):
 
 def fedora_images_for_release(df, release):
     """Get the list of images for a given release."""
-    return df[df["Name"].str.contains(f"Fedora-Cloud-Base-{release}")]
+    df = df[df["Name"].str.contains(f"Fedora-Cloud-Base-{release}")]
+
+    # Remove standard storage images.
+    df = df[~df["Name"].str.contains("standard")]
+
+    return df.sort_values(["Region", "Architecture"])
 
 
 def aws_images_all_releases(df):
@@ -93,16 +101,34 @@ def aws_images_all_releases(df):
     filtered_df = df[df["Name"].str.contains("Fedora-Cloud-Base")].copy(deep=True)
 
     # Get all of the unique releases from the AWS data.
-    regex = r"Fedora-Cloud-Base-(\d*\w*[_]?\w+?-[\dn\.]+\w+)"
+    # https://regex101.com/r/VtJWa5/1
+    regex = r"Fedora-Cloud-Base-(\d*\w*[_]?\w+?-[\dn\.]+)\."
     return filtered_df["Name"].str.extract(regex, expand=False).unique()
 
 
 app.images = load_image_data()
 
+region_flags = {
+    "ap-northeast-1": "jp",
+    "ap-northeast-2": "kr",
+    "ap-south-1": "in",
+    "ap-southeast-1": "sg",
+    "ap-southeast-2": "au",
+    "ca-central-1": "ca",
+    "eu-central-1": "de",
+    "eu-west-1": "ie",
+    "eu-west-2": "gb",
+    "sa-east-1": "br",
+    "us-east-1": "us",
+    "us-east-2": "us",
+    "us-west-1": "us",
+    "us-west-2": "us",
+}
+
 
 @app.context_processor
 def inject_global_template_variables():
-    return dict(fedora_releases=combined_fedora_releases())
+    return dict(fedora_releases=combined_fedora_releases(), region_flags=region_flags)
 
 
 @app.route("/")

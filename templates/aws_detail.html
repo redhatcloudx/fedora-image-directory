@@ -7,8 +7,8 @@
     <h1 class="display-5 fw-bold text-body-emphasis">Fedora release: {{ release }}</h1>
     <div class="col-lg-8 mx-auto">
         <p class="lead mb-4">
-            Each AMI matching this release appears in the table below.<br /> Click the
-            <span class="badge bg-success">Launch</span> button to open the EC2 console and launch a Fedora instance!
+            Choose your preferred region below and click on the architecture to launch
+            an instance.
         </p>
     </div>
 </div>
@@ -26,59 +26,27 @@
     </div>
 </div>
 
-<div class="container-sm">
-    <div class="row">
-        <div class="mx-auto align-middle">
-            <table id="images" class="table table-striped table-hover">
-                <thead>
-                    <tr>
-                        <th scope="col">Name</th>
-                        <th scope="col" class="text-center">🚀</th>
-                        <th scope="col" class="text-center">Region</th>
-                        <th scope="col" class="text-center">Storage</th>
-                        <th scope="col" class="text-center">AMI ID</th>
+<div class="row row-cols-1 row-cols-md-5 g-4 py-3 text-center">
+    {% for region in images.Region.unique() %}
+    <div class="col">
+        <div class="card">
+            <div class=" card-body bg-secondary-subtle">
+                <h5 class="card-title"><span class="fi fi-{{ region_flags[region]}}"></span> {{ region }}</h5>
+                <p class="card-text">
+                    {% for _, image in images[images.Region == region].iterrows() %}
+                    {% set arch = "aarch64" if image.Architecture == "arm64" else "x86_64" %}
 
-                    </tr>
-                </thead>
-                <tbody>
-                    {%- for index, row in images.iterrows() %}
-                    <tr>
-                        <td>{{ row.Name }}</td>
-                        <td class="text-center">
-                            <a class="btn btn-success btn-sm" role="button" target="_blank"
-                                href="https://{{ row.Region }}.console.aws.amazon.com/ec2/home?region={{ row.Region }}#LaunchInstances:ami={{ row.ImageId }}">Launch</a>
-                        </td>
-                        <td class="text-center">{{ row.Region }}</td>
-                        <td class="text-center">{{ row.Name.split("-")[-2] }}</td>
-                        <td class="text-center font-monospace"><small>{{ row.ImageId }}</small></td>
-                    </tr>
-                    {%- endfor %}
-                </tbody>
-            </table>
+                    <a role="button" target="_blank"
+                        href="https://{{ Region }}.console.aws.amazon.com/ec2/home?region={{ Region }}#LaunchInstances:ami={{ image.ImageId }}"
+                        class="btn btn-{{ 'primary' if arch == 'x86_64' else 'secondary' }}">
+                        {{ arch }}
+                    </a>
+                    {% endfor %}
+                </p>
+            </div>
         </div>
     </div>
+    {% endfor %}
 </div>
-
-<script type="text/javascript">
-    $(document).ready(function () {
-
-        // Create the DataTable
-        var table = $("#images").DataTable({
-            orderCellsTop: true,
-            order: [[0, 'asc']],
-            "paging": false,
-            "columnDefs": [
-                {
-                    "targets": 1,
-                    "orderable": false
-                },
-                {
-                    "targets": 0,
-                    "visible": false,
-                }
-            ]
-        });
-    });
-</script>
 
 {% endblock %}
