@@ -23,3 +23,6 @@ mypy = "^1.1.1"
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.scripts]
+process_images = 'app.process:main'

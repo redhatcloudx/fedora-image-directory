@@ -47,6 +47,9 @@ jobs:
           curl --location --silent --retry 10 --retry-all-errors \
             https://getfedora.org/releases.json | jq > data/releases.json
 
+      - name: Process the Fedora image data
+        run: poetry run python app/process_aws.py
+
       - name: Commit and push if it changed
         run: |-
           git config user.name "Data updates"
