@@ -65,6 +65,15 @@ def stable_fedora_versions():
     return current_fedora_versions().query("prerelease==False")["version"].tolist()
 
 
+def combined_fedora_releases():
+    """Join the current versions and releases together."""
+    return (
+        current_fedora_releases()
+        .merge(current_fedora_versions(), on="version")
+        .sort_values("version", ascending=False)
+    )
+
+
 def add_fedora_version(df):
     """Add the Fedora version to the dataframe."""
     df["fedora.version"] = df["Name"].str.extract(
@@ -107,10 +116,20 @@ def add_architecture(df):
     return df
 
 
+def add_latest_stable_flag(df, combined_releases):
+    """Add the latest stable flag to the dataframe."""
+    stable_releases = combined_releases.query("prerelease==False")
+    df["fedora.latest_stable"] = df["fedora.release"].apply(
+        lambda x: True if x in stable_releases["release"].to_list() else False
+    )
+    return df
+
+
 def main():
     """Where the magic happens."""
     fedora_releases = current_fedora_releases()
     fedora_versions = current_fedora_versions()
+    combined_releases = combined_fedora_releases()
 
     # Process the raw image data from AWS.
     aws_images = load_raw_image_data()
@@ -119,6 +138,7 @@ def main():
     aws_images = add_eol_flag(aws_images, fedora_versions)
     aws_images = add_release(aws_images)
     aws_images = add_architecture(aws_images)
+    aws_images = add_latest_stable_flag(aws_images, combined_releases)
 
     # Write the processed data to a JSON file.
     aws_images.to_json("data/processed.json", orient="records", indent=2)

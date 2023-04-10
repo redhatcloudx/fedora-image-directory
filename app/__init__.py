@@ -134,8 +134,12 @@ def inject_global_template_variables():
 @app.route("/")
 def index():
     """Show the main page."""
-    df = combined_fedora_releases()
-    stable_releases = df[~df["prerelease"]]["release"]
+    df = app.images
+    stable_releases = (
+        df[df["fedora.latest_stable"]]
+        .sort_values("fedora.release", ascending=False)["fedora.release"]
+        .unique()
+    )
     return render_template("home.html", stable_releases=stable_releases)
 
 
