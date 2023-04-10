@@ -16,10 +16,10 @@
     </div>
     <div class="row">
         <div class="col"></div>
-        {% for index, row in combined_releases.iterrows() if not row.prerelease %}
+        {% for release in stable_releases %}
         <div class="col-md-auto p-1">
-            <a class="btn btn-primary" role="button" href="{{ url_for('aws_image_detail', release=row.release) }}">
-                Fedora {{ row.release }}
+            <a class="btn btn-primary" role="button" href="{{ url_for('aws_image_detail', release=release) }}">
+                Fedora {{ release }}
             </a>
         </div>
         {% endfor %}

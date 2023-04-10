@@ -14,7 +14,7 @@ app = Flask("fedora")
 def load_image_data():
     """Load image data from the image directory."""
     app.logger.info("Loading image data...")
-    return pd.read_json("data/images.json")
+    return pd.read_json("data/processed.json")
 
 
 def current_fedora_releases():
@@ -134,10 +134,9 @@ def inject_global_template_variables():
 @app.route("/")
 def index():
     """Show the main page."""
-    return render_template(
-        "home.html",
-        combined_releases=combined_fedora_releases(),
-    )
+    df = combined_fedora_releases()
+    stable_releases = df[~df["prerelease"]]["release"]
+    return render_template("home.html", stable_releases=stable_releases)
 
 
 @app.route("/aws/")

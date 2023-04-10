@@ -86,7 +86,6 @@ def add_prerelease_flag(df, prerelease_versions):
 def add_eol_flag(df, current_versions):
     """Add the EOL flag to the dataframe."""
     non_eol_list = current_versions["version"].to_list()
-    print(non_eol_list)
     df["fedora.eol"] = df["fedora.version"].apply(
         lambda x: False if x.split("_")[0] in non_eol_list else True
     )
