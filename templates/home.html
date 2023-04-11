@@ -9,7 +9,7 @@
         <div class="col-lg-6">
             <h1>Fedora on AWS</h1>
             <p class="lead">
-                Start by choosing your preferred stable Fedora release below:
+                Start by choosing your preferred Fedora release below:
             </p>
         </div>
         <div class="col"></div>
@@ -19,7 +19,14 @@
         {% for release in stable_releases %}
         <div class="col-md-auto p-1">
             <a class="btn btn-primary" role="button" href="{{ url_for('aws_image_detail', release=release) }}">
-                Fedora {{ release }}
+                Fedora {{ release.split("-")[0] }}
+            </a>
+        </div>
+        {% endfor %}
+        {% for release in prereleases %}
+        <div class="col-md-auto p-1">
+            <a class="btn btn-dark" role="button" href="{{ url_for('aws_image_detail', release=release) }}">
+                🚧 Fedora {{ release.split("-")[0].replace("_", " ") }}
             </a>
         </div>
         {% endfor %}
