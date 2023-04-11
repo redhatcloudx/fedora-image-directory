@@ -74,9 +74,13 @@ def aws_image_list():
     # Group the results by the release name so we get unique release names and then
     # sort them by the release name while preserving our original index.
     releases = (
-        df.groupby("fedora_release", as_index=False)
+        df.query("not fedora_eol and not (fedora_prerelease and fedora_stable)")
+        .groupby("fedora_release", as_index=False)
         .first()
-        .sort_values("fedora_release", ascending=False)
+        .sort_values(
+            ["fedora_stable", "fedora_nightly", "fedora_release"],
+            ascending=[False, True, False],
+        )
     )
 
     return render_template(

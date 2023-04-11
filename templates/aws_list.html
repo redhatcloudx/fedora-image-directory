@@ -17,8 +17,10 @@
             each day from the stable release but are not thoroughly tested.<br />
             <span class="badge text-bg-warning">Pre-release</span> images come from
             an upcoming release that is not stable yet.<br />
-            <span class="badge text-bg-danger">End of life</span> images are no longer
-            supported by Fedora.
+            <span class="badge text-bg-success" title="Latest">Latest</span> images are
+            the newest stable and pre-release images for a Fedora version.
+            <!-- <span class="badge text-bg-danger">End of life</span> images are no longer
+            supported by Fedora. -->
 
         </p>
     </div>
@@ -73,6 +75,11 @@
                 <span class="badge text-bg-{{ status_color }}" title="{{badge_title}}">
                     {{ badge_text }}
                 </span>
+                {% if release.fedora_latest_stable or release.fedora_latest_prerelease %}
+                <span class="badge text-bg-success" title="Latest">
+                    Latest
+                </span>
+                {% endif %}
                 {% if release.fedora_arch == "x86_64" %}
                 <span class="badge text-bg-primary">
                     x86 (Intel/AMD)
