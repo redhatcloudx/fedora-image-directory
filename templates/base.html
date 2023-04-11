@@ -91,14 +91,39 @@
         {% block content %}{% endblock %}
     </div>
 
-    <footer class="footer mt-auto py-3 bg-light text-center border-top">
-        <div class="container">
-            <span class="text-muted">An experiment from the Red Hat Cloud Experience team.
-                <img src="{{ url_for('static', filename='redhat.png') }}" alt="Red Hat Logo" style="height: 25px;">
-                <a href="https://github.com/redhatcloudx/fedora-image-directory">Source on GitHub</a>
-            </span>
-        </div>
-    </footer>
+    <div class="container">
+        <footer class="d-flex flex-wrap justify-content-between align-items-center py-3 my-4 border-top">
+            <p class="col-md-5 mb-0 text-body-secondary">
+                An experiment from the Red Hat Cloud Experience team.
+
+            </p>
+
+            <a href="/"
+                class="col-md-2 d-flex align-items-center justify-content-center mb-3 mb-md-0 me-md-auto link-body-emphasis text-decoration-none">
+                <img src="{{ url_for('static', filename='Logo-Red_Hat-A-Black-RGB.png') }}" alt="Red Hat Logo"
+                    style="height: 25px;">
+            </a>
+
+            <ul class="nav col-md-5 justify-content-end">
+                <li class="nav-item">
+                    <a href="https://github.com/redhatcloudx/fedora-image-directory"
+                        class="nav-link px-2 text-body-secondary">
+                        GitHub
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="mailto:contact@imagedirectory.cloud" class="nav-link px-2 text-body-secondary">
+                        Contact
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <span class="nav-link px-2 text-body-secondary">
+                        Updated: {{ now }}
+                    </span>
+                </li>
+            </ul>
+        </footer>
+    </div>
 </body>
 
 </html>

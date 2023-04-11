@@ -1,4 +1,5 @@
 """Main flask application."""
+from datetime import datetime
 import json
 import re
 
@@ -55,6 +56,7 @@ def inject_global_template_variables():
         stable_releases=stable_releases,
         prereleases=prereleases,
         region_flags=region_flags,
+        now=datetime.utcnow().strftime("%Y-%m-%d"),
     )
 
 
