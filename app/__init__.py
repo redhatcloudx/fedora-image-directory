@@ -94,7 +94,7 @@ def aws_image_detail(release):
     return render_template("aws_regions.html", release=release, images=images)
 
 
-@app.route("/aws/<release>/<region>")
+@app.route("/aws/<release>/<region>/")
 def aws_image_per_region(release, region):
     """Get a list of AWS images for a particular release and region."""
     df = app.images
