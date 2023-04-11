@@ -1,5 +1,6 @@
 """Process Fedora image data from AWS."""
 import json
+import re
 
 import pandas as pd
 
@@ -76,7 +77,7 @@ def combined_fedora_releases():
 
 def add_fedora_version(df):
     """Add the Fedora version to the dataframe."""
-    df["fedora.version"] = df["Name"].str.extract(
+    df["fedora_version"] = df["Name"].str.extract(
         r"Fedora-Cloud-Base-([\d\w]+)", expand=False
     )
     return df
@@ -84,7 +85,7 @@ def add_fedora_version(df):
 
 def add_prerelease_flag(df, prerelease_versions):
     """Add the prerelease flag to the dataframe."""
-    df["fedora.prerelease"] = df["fedora.version"].apply(
+    df["fedora_prerelease"] = df["fedora_version"].apply(
         lambda x: True
         if (x.split("_")[0] in prerelease_versions or "Beta" in x or x == "Rawhide")
         else False
@@ -95,8 +96,24 @@ def add_prerelease_flag(df, prerelease_versions):
 def add_eol_flag(df, current_versions):
     """Add the EOL flag to the dataframe."""
     non_eol_list = current_versions["version"].to_list()
-    df["fedora.eol"] = df["fedora.version"].apply(
+    df["fedora_eol"] = df["fedora_version"].apply(
         lambda x: False if x.split("_")[0] in non_eol_list else True
+    )
+    return df
+
+
+def add_nightly_flag(df):
+    """Add the nightly flag to the dataframe."""
+    df["fedora_nightly"] = df["fedora_release"].apply(
+        lambda x: True if re.search(r"\d{8}", x) else False
+    )
+    return df
+
+
+def add_stable_flag(df, stable_versions):
+    """Add the stable flag to the dataframe."""
+    df["fedora_stable"] = df["fedora_version"].apply(
+        lambda x: True if x.split("_")[0] in stable_versions else False
     )
     return df
 
@@ -104,13 +121,13 @@ def add_eol_flag(df, current_versions):
 def add_release(df):
     """Add the release name to the dataframe."""
     regex = r"Fedora-Cloud-Base-(\d*\w*[_]?\w+?-[\dn\.]+)\."
-    df["fedora.release"] = df["Name"].str.extract(regex, expand=False)
+    df["fedora_release"] = df["Name"].str.extract(regex, expand=False)
     return df
 
 
 def add_architecture(df):
     """Add the architecture to the dataframe."""
-    df["fedora.architecture"] = df["Name"].apply(
+    df["fedora_architecture"] = df["Name"].apply(
         lambda x: x.split("-")[4].split(".")[-1]
     )
     return df
@@ -119,26 +136,39 @@ def add_architecture(df):
 def add_latest_stable_flag(df, combined_releases):
     """Add the latest stable flag to the dataframe."""
     stable_releases = combined_releases.query("prerelease==False")
-    df["fedora.latest_stable"] = df["fedora.release"].apply(
+    df["fedora_latest_stable"] = df["fedora_release"].apply(
         lambda x: True if x in stable_releases["release"].to_list() else False
+    )
+    return df
+
+
+def add_latest_prerelease_flag(df, combined_releases):
+    """Add the latest stable flag to the dataframe."""
+    prereleases = combined_releases.query("prerelease==True")
+    df["fedora_latest_prerelease"] = df["fedora_release"].apply(
+        lambda x: True if x in prereleases["release"].to_list() else False
     )
     return df
 
 
 def main():
     """Where the magic happens."""
-    fedora_releases = current_fedora_releases()
     fedora_versions = current_fedora_versions()
     combined_releases = combined_fedora_releases()
+    prerelease_versions = prerelease_fedora_versions()
+    stable_versions = stable_fedora_versions()
 
     # Process the raw image data from AWS.
     aws_images = load_raw_image_data()
     aws_images = add_fedora_version(aws_images)
-    aws_images = add_prerelease_flag(aws_images, fedora_versions)
+    aws_images = add_prerelease_flag(aws_images, prerelease_versions)
     aws_images = add_eol_flag(aws_images, fedora_versions)
     aws_images = add_release(aws_images)
     aws_images = add_architecture(aws_images)
     aws_images = add_latest_stable_flag(aws_images, combined_releases)
+    aws_images = add_latest_prerelease_flag(aws_images, combined_releases)
+    aws_images = add_nightly_flag(aws_images)
+    aws_images = add_stable_flag(aws_images, stable_versions)
 
     # Write the processed data to a JSON file.
     aws_images.to_json("data/processed.json", orient="records", indent=2)

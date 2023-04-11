@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% block title %}Fedora Cloud images on AWS for release {{ release }}{% endblock %}
+
+{% block content %}
+
+<div class="px-4 py-1 my-1 text-center">
+    <h1 class="display-5 fw-bold text-body-emphasis">Fedora release: {{ release }}</h1>
+    <div class="col-lg-8 mx-auto">
+        <p class="lead mb-4">
+            Choose your preferred region:
+        </p>
+    </div>
+</div>
+
+<div class="row row-cols-1 row-cols-md-4 g-4 py-3 text-center">
+    {% for region in images.Region.unique() | sort %}
+    <div class="col">
+        <div class="card">
+            <div class=" card-body bg-secondary-subtle">
+                <p class="card-text">
+                    <a href="{{ url_for('aws_image_per_region', release=release, region=region) }}"
+                        class="stretched-link text-reset text-decoration-none">
+                        <h1><span class="fi fi-{{ region_flags[region]}}"></span></h1>
+                        <h4>{{ region }}</h4>
+                    </a>
+                </p>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+{% endblock %}

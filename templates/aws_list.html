@@ -7,13 +7,24 @@
     <h1 class="display-5 fw-bold text-body-emphasis">Fedora images on AWS</h1>
     <div class="col-lg-8 mx-auto">
         <p class="lead">
-            All of the available Fedora releases on AWS appear in the table below.<br />
-            Each images is noted with a status, which can be one of the following:
+            All of the available Fedora releases on AWS appear in the table below.
+        </p>
+        <p class="text-left">
+            Image statuses:<br />
+            <span class="badge text-bg-primary">Stable</span> releases are fully tested
+            images ready for production workloads.<br />
+            <span class="badge text-bg-secondary">Stable nightly</span> images are built
+            each day from the stable release but are not thoroughly tested.<br />
+            <span class="badge text-bg-warning">Pre-release</span> images come from
+            an upcoming release that is not stable yet.<br />
+            <span class="badge text-bg-danger">End of life</span> images are no longer
+            supported by Fedora.
+
         </p>
     </div>
 </div>
 
-<div class="container">
+<div class=" container">
     <div class="row">
         <div class="col"></div>
         <div class="col">
@@ -28,47 +39,50 @@
 </div>
 
 <div class="d-flex flex-wrap justify-content-center" id="fedora_cards">
-    {%- for release in releases | sort(reverse=True) %}
-    {% set fedora_version = release.split("-")[0] %}
-    {% set fedora_arch = release.split(".")[-1] %}
-    {% set is_prerelease = (fedora_version in prereleases or "Beta" in release) %}
-    {% set is_nightly = (release.split(".")[0] | length > 8) %}
-    {% set is_eol = (fedora_version.split("_")[0] not in stable_releases and fedora_version.split("_")[0] not in
-    prereleases) %}
-    {% if is_eol %}
+    {%- for release in releases %}
+
+    {# This might seem silly, but the goal here is to gradually determine how this #}
+    {# release should be classified. It runs from the most problematic (EOL) to #}
+    {# least (stable nightly builds). #}
+
+    {# A beta on a stable release should be considered EOL since the release has been #}
+    {# marked GA already. For example, if Fedora 37 is the latest, then Fedora 37 is #}
+    {# not EOL, but Fedora 37_Beta is EOL. #}
+
+    {% if release.fedora_eol or (release.fedora_stable and release.fedora_prerelease) %}
     {% set status_color = "danger" %}
-    {% set badge_text = "End Of Life" %}
-    {% set badge_title = "No longer supported by Fedora. Do not use." %}
-    {% elif is_prerelease %}
+    {% set badge_text = "End of life" %}
+
+    {% elif release.fedora_prerelease %}
     {% set status_color = "warning" %}
-    {% set badge_text = "Pre-Release" %}
-    {% set badge_title = "Early Fedora release and possibly unstable." %}
-    {% elif is_nightly %}
+    {% set badge_text = "Pre-release" %}
+
+    {% elif release.fedora_nightly %}
     {% set status_color = "secondary" %}
-    {% set badge_text = "Stable Nightly" %}
-    {% set badge_title = "Automated and untested nightly build of a stable release." %}
+    {% set badge_text = "Nightly" %}
+
     {% else %}
     {% set status_color = "primary" %}
     {% set badge_text = "Stable" %}
-    {% set badge_title = "Currently supported by Fedora and receiving updates." %}
     {% endif %}
+
     <div class="card m-1" style="width: 18rem;">
         <div class="card-body bg-{{ status_color }}-subtle">
-            <h5 class="card-title">{{ release }}</h5>
+            <h5 class="card-title">{{ release.fedora_release }}</h5>
             <p class="card-text">
                 <span class="badge text-bg-{{ status_color }}" title="{{badge_title}}">
                     {{ badge_text }}
                 </span>
-                {% if release.endswith("x86_64") %}
+                {% if release.fedora_arch == "x86_64" %}
                 <span class="badge text-bg-primary">
                     x86 (Intel/AMD)
                 </span>
-                {% elif release.endswith("aarch64") %}
+                {% elif release.fedora_arch == "aarch64" %}
                 <span class="badge text-bg-dark">
                     ARM/aarch64
                 </span>
                 {% endif %}
-                <a href="{{ url_for('aws_image_detail', release=release) }}" class="stretched-link">
+                <a href="{{ url_for('aws_image_detail', release=release.fedora_release) }}" class="stretched-link">
 
                 </a>
             </p>

@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+{% block title %}Fedora Cloud images on AWS for release {{ release }} in {{ region }}{% endblock %}
+
+{% block content %}
+
+<div class="px-4 py-1 my-1 text-center">
+    <h1 class="display-5 fw-bold text-body-emphasis">
+        Fedora {{ release.split("-")[0] }} in {{ region }} <span class="fi fi-{{ region_flags[region]}}"></span>
+    </h1>
+    <div class="col-lg-8 mx-auto">
+        <p class="lead mb-4">
+            Launch an instance in the EC2 console or copy the AMI ID to your clipboard:
+        </p>
+    </div>
+</div>
+
+<!-- Wrap this in a flex div and justify to the center for regions with < 4 images. -->
+<div class="d-flex justify-content-center">
+    <div class="card-group">
+        {% for _, i in images.iterrows() %}
+        {% set ec2_url = "https://" + region+ ".console.aws.amazon.com/ec2/home" %}
+        {% set ec2_path = "#LaunchInstances:ami=" + i.ImageId %}
+        <div class="card" style="max-width: 20rem;">
+            <div class="card-header">
+                {{ i.Name}}
+            </div>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item">
+                    <span class="fw-bold">AMI:</span>
+                    <span class="font-monospace">{{ i.ImageId }}</span>
+
+                </li>
+                <li class="list-group-item">
+                    <span class="fw-bold">
+                        Architecture:
+                    </span>
+                    {{i.fedora_architecture }}
+                </li>
+                <li class="list-group-item">
+                    <span class="fw-bold">
+                        Storage:
+                    </span>
+                    {{ i.Name.split("-")[-2] }}
+                </li>
+            </ul>
+            <div class="card-body">
+                <a class="btn btn-primary btn-sm" target="_blank" href="{{ ec2_url }}?{{ec2_path}}">🚀 Launch in EC2</a>
+                <a class="btn btn-secondary btn-sm" onclick="navigator.clipboard.writeText('{{ i.ImageId }}');">📋 Copy
+                    AMI
+                    ID</a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<div class="p-3">
+    <div class="row">
+        <div class="col"></div>
+        <div class="col-6 text-center">
+            <div class="alert alert-primary" role="alert">
+                🤔 Need a different region?
+                <a href="{{ url_for('aws_image_detail', release=release) }}">
+                    Go back to the region list</a>
+                for Fedora {{ release.split("-")[0] }} images.
+            </div>
+        </div>
+        <div class="col"></div>
+    </div>
+</div>
+
+{% endblock %}

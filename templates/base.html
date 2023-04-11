@@ -60,18 +60,18 @@
                         </a>
                         <ul class="dropdown-menu">
                             <li><a class="dropdown-item fw-bold">Stable releases</a></li>
-                            {% for index, row in fedora_releases.iterrows() if not row.prerelease %}
-                            <li><a class="dropdown-item"
-                                    href="{{ url_for('aws_image_detail', release=row.release) }}">{{ row.release }}</a>
+                            {% for release in stable_releases %}
+                            <li><a class="dropdown-item" href="{{ url_for('aws_image_detail', release=release) }}">{{
+                                    release }}</a>
                             </li>
                             {% endfor %}
                             <li>
                                 <hr class="dropdown-divider">
                             </li>
                             <li><a class="dropdown-item fw-bold">Pre-releases</a></li>
-                            {% for index, row in fedora_releases.iterrows() if row.prerelease %}
-                            <li><a class="dropdown-item"
-                                    href="{{ url_for('aws_image_detail', release=row.release) }}">{{ row.release }}</a>
+                            {% for release in prereleases %}
+                            <li><a class="dropdown-item" href="{{ url_for('aws_image_detail', release=release) }}">{{
+                                    release }}</a>
                             </li>
                             {% endfor %}
                             <li>
