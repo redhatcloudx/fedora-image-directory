@@ -1,5 +1,7 @@
 # fedora-image-directory
 
+Update: PoC showed how visitor flow could work, but it now needs to be integrated into Fedora's cloud page on the new website.
+
 Proof of concept Fedora image directory using Cloud Image Directory data
 
 ## Data sources
